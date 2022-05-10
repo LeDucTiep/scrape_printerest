@@ -1,4 +1,3 @@
-from concurrent.futures import thread
 import sqlite3
 import subprocess
 import requests
@@ -8,14 +7,16 @@ import os
 import shutil
 from os import listdir
 from selenium.webdriver.common.by import By
-from selenium import webdriver as selenium_webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as chrome_service
+from selenium.webdriver.chrome.options import Options as chrome_options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from os.path import isfile, join
 
 maximum_scrape_theads = 2
-maximum_download_theads = 20
+maximum_download_theads = 40
 DATABASE_PATH = 'database.db'
 MEGA_FOLDER_LINK = "https://mega.nz/fm/BdB1UCyZ"
 LINK_CHROMEDRIVER = r"D:\ChromeDriver\chrome_ver101\chromedriver.exe"
@@ -23,10 +24,6 @@ LINK_TO_USER_DATA = r'D:\Brandon_Smietana\browser_data'
 RAR_PATH = os.getcwd()+"/"
 FOLDER_PATH = os.getcwd()+"/IMAGE/"
 # set path="C:\Program Files\WinRAR\";%path%
-
-
-Separator_for_csv = "\t"
-input_file = 'input_of_second_tool.csv'
 
 
 class database:
@@ -307,9 +304,8 @@ class rar:
 
 
 class chrome:
-    def initDriver(self, IS_HEADLESS=False):
-        options = selenium_webdriver.ChromeOptions()
-        options.add_argument(r'user-data-dir='+LINK_TO_USER_DATA)
+    def initDriver(IS_HEADLESS=False) -> webdriver:
+        options = chrome_options()
         options.add_experimental_option(
             "excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
@@ -320,8 +316,8 @@ class chrome:
             "profile.managed_default_content_settings.images": 2
         }
         options.add_experimental_option("prefs", prefs)
-        return selenium_webdriver.Chrome(service=Service(
-            LINK_CHROMEDRIVER), options=options)
+        return webdriver.Chrome(service=chrome_service(
+            ChromeDriverManager().install()), options=options)
 
     def upload_to_mega(self):
         global RAR_PATH

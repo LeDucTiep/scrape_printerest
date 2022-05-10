@@ -3,21 +3,25 @@ import sqlite3
 import sys
 import time
 from bs4 import BeautifulSoup
-from selenium import webdriver as selenium_webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as chrome_service
+from selenium.webdriver.chrome.options import Options as chrome_options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+
+
+file_out_path = 'output_of_first_tool.csv'
 
 Separator_for_csv = "\t"
 
 DATABASE_PATH = 'database.db'
-LINK_CHROMEDRIVER = r"D:\ChromeDriver\chrome_ver101\chromedriver.exe"
 
 TIME_TIME_WAIT_UNTIL_THE_WEB_LOADED = 0.5
 
 all_data = {}
 
 
-def initDriver(IS_HEADLESS=False):
-    options = selenium_webdriver.ChromeOptions()
+def initDriver(IS_HEADLESS=False) -> webdriver:
+    options = chrome_options()
     options.add_experimental_option(
         "excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
@@ -28,8 +32,8 @@ def initDriver(IS_HEADLESS=False):
         "profile.managed_default_content_settings.images": 2
     }
     options.add_experimental_option("prefs", prefs)
-    return selenium_webdriver.Chrome(service=Service(
-        LINK_CHROMEDRIVER), options=options)
+    return webdriver.Chrome(service=chrome_service(
+        ChromeDriverManager().install()), options=options)
 
 
 def wait_until_load_full_images(driver, search_term):
@@ -180,7 +184,6 @@ if __name__ == '__main__':
     else:
         exit()
     driver = initDriver()
-    file_out_path = 'output_of_first_tool.csv'
     try:
         for i in range(len(sys.argv)):
             if(sys.argv[i] == '-o'):

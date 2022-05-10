@@ -1,11 +1,14 @@
-import csv
 import json
 import sqlite3
 import sys
 import time
 from bs4 import BeautifulSoup
-from selenium import webdriver as selenium_webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as chrome_service
+from selenium.webdriver.chrome.options import Options as chrome_options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+
+file_out_path = 'output_of_second_tool.json'
 
 Separator_for_csv = "\t"
 DATABASE_PATH = "database.db"
@@ -15,8 +18,8 @@ HOW_MANY_WINDOWS_DO_YOU_NEED = 2
 HOW_MANY_WINDOWS_DO_YOU_NEED = HOW_MANY_WINDOWS_DO_YOU_NEED-1
 LINK_CHROMEDRIVER = r"D:\ChromeDriver\chrome_ver101\chromedriver.exe"
 
-def initDriver(IS_HEADLESS=False):
-    options = selenium_webdriver.ChromeOptions()
+def initDriver(IS_HEADLESS=False) -> webdriver:
+    options = chrome_options()
     options.add_experimental_option(
         "excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
@@ -27,8 +30,8 @@ def initDriver(IS_HEADLESS=False):
         "profile.managed_default_content_settings.images": 2
     }
     options.add_experimental_option("prefs", prefs)
-    return selenium_webdriver.Chrome(service=Service(
-        LINK_CHROMEDRIVER), options=options)
+    return webdriver.Chrome(service=chrome_service(
+        ChromeDriverManager().install()), options=options)
 
 
 class window:
@@ -214,8 +217,6 @@ def set_board_is_scraped(url):
         return set_board_is_scraped(url)
 
 if __name__ == '__main__':
-    global file_out_path
-    file_out_path = 'output_of_second_tool.json'
     try:
         for i in range(len(sys.argv)):
             if(sys.argv[i] == '-o'):

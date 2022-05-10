@@ -1,6 +1,9 @@
 import sqlite3
 import sys
 
+file_out_path = 'output_of_third_tool.csv'
+
+
 DATABASE_PATH = "database.db"
 
 def get_all_pins_url():
@@ -17,7 +20,6 @@ def get_all_pins_url():
     return returns
 
 if __name__ == '__main__':
-    file_out_path = 'output_of_third_tool.csv'
     try:
         for i in range(len(sys.argv)):
             if(sys.argv[i] == '-o'):
@@ -27,7 +29,6 @@ if __name__ == '__main__':
         print("file_out_path is not set yet!")
     # input 
     links_pin = get_all_pins_url()
-    
     
     # process
     pin_set = {}
