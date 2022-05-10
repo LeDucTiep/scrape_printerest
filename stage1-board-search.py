@@ -177,8 +177,8 @@ if __name__ == '__main__':
     if(sys.argv[1] == '-o'):
         print('You forgot the search term.')
         exit()
-    option = input(
-        "This program will delete all data in database, do you want to run that? [y/n] ")
+    option = 'y'
+    print("This program will delete all data in database!")
     if(option == 'y'):
         delete_all_data_in_database()
     else:
