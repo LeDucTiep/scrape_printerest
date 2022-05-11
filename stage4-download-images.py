@@ -306,6 +306,7 @@ class rar:
 class chrome:
     def initDriver(IS_HEADLESS=False) -> webdriver:
         options = chrome_options()
+        options.add_argument("user-data-dir="+LINK_TO_USER_DATA) 
         options.add_experimental_option(
             "excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
