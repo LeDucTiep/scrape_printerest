@@ -16,7 +16,6 @@ DATABASE_PATH = "database.db"
 HOW_MANY_WINDOWS_DO_YOU_NEED = 2
 # 1 window is already open when we open the browser
 HOW_MANY_WINDOWS_DO_YOU_NEED = HOW_MANY_WINDOWS_DO_YOU_NEED-1
-LINK_CHROMEDRIVER = r"D:\ChromeDriver\chrome_ver101\chromedriver.exe"
 
 def initDriver(IS_HEADLESS=False) -> webdriver:
     options = chrome_options()
