@@ -15,14 +15,25 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from os.path import isfile, join
 
+MEGA_FOLDER_LINK = "https://mega.nz/fm/BdB1UCyZ"
+
+# MAKE SURE YOU INSTALLED "rar"
+
+# In Linux: https://www.tecmint.com/how-to-open-extract-and-create-rar-files-in-linux/
+
+# In Windowns: https://www.win-rar.com/start.html?&L=0
+        # Then add path to rar.exe (maybe: C:\Program Files\WinRAR\) 
+        # to your PATH
+
+# In MacOS: https://best-mac-tips.com/2013/02/01/install-free-command-line-unrar-mac/
+
 maximum_scrape_theads = 2
 maximum_download_theads = 40
 DATABASE_PATH = 'database.db'
-MEGA_FOLDER_LINK = "https://mega.nz/fm/BdB1UCyZ"
-LINK_TO_USER_DATA = './browser_data'
+LINK_TO_USER_DATA = os.getcwd()+'/browser_data'
 RAR_PATH = os.getcwd()+"/"
 FOLDER_PATH = os.getcwd()+"/IMAGE/"
-# set path="C:\Program Files\WinRAR\";%path%
+# set path="";%path%
 
 
 class database:
@@ -158,7 +169,6 @@ class images:
                 for i in threads:
                     i.join()
                 threads = []
-
 
     def download(self, url):
         try_again = 2
@@ -305,7 +315,7 @@ class rar:
 class chrome:
     def initDriver(IS_HEADLESS=False) -> webdriver:
         options = chrome_options()
-        options.add_argument("user-data-dir="+LINK_TO_USER_DATA) 
+        options.add_argument("user-data-dir="+LINK_TO_USER_DATA)
         options.add_experimental_option(
             "excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
@@ -318,13 +328,23 @@ class chrome:
         options.add_experimental_option("prefs", prefs)
         return webdriver.Chrome(service=chrome_service(
             ChromeDriverManager().install()), options=options)
-
-    def upload_to_mega(self):
+    def check_login(self, driver):
+        try:
+            driver.get(MEGA_FOLDER_LINK)
+            WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.LINK_TEXT, "Create Account"))
+            )
+            input("\n\n----------------------------------\nPlease Log in for first time!\nThen press Enter to continue.\n----------------------------------\n\n\n")
+            return self.check_login(driver)
+        except Exception as e:
+            # print(str(e))
+            pass
+    def upload_to_mega(self) -> None:
         global RAR_PATH
         driver = self.initDriver()
-        driver.get(MEGA_FOLDER_LINK)
+        self.check_login(driver)
         try:
-            element = WebDriverWait(driver, 60).until(
+            WebDriverWait(driver, 60).until(
                 EC.presence_of_element_located((By.NAME, "dashboard"))
             )
         except:
@@ -354,12 +374,15 @@ class chrome:
             if(count == 5):
                 break
             time.sleep(2)
-        input("ENTER WHEN DONE")
+        while(1):
+            time.sleep(5)
+            is_completed = bool(driver.execute_script("return document.getElementsByClassName('transfer-task-row').length == document.getElementsByClassName('transfer-task-row upload sprite-fm-mono icon-up complete').length"))
+            if(is_completed):
+                break
         driver.quit()
 
 
 if __name__ == '__main__':
-
     database.delete_pin_is_downloading()
     pin_urls = database.get_pin_url()
 
