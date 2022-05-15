@@ -33,7 +33,6 @@ DATABASE_PATH = 'database.db'
 LINK_TO_USER_DATA = os.getcwd()+'/browser_data'
 RAR_PATH = os.getcwd()+"/"
 FOLDER_PATH = os.getcwd()+"/IMAGE/"
-# set path="";%path%
 
 
 class database:
